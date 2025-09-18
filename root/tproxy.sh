@@ -20,9 +20,20 @@ echo "[步骤] 清理旧的 IPv4 规则..."
 # 删除 fwmark 规则（允许失败，规则可能不存在）
 ip rule del fwmark 1 table 100 2>/dev/null || true
 
-# 清空 mangle 表和删除自定义链 XRAY（允许链不存在）
-iptables -t mangle -F 2>/dev/null || true
+# 删除之前添加的PREROUTING链中的XRAY规则（允许失败）
+iptables -t mangle -D PREROUTING -j XRAY 2>/dev/null || true
+
+# 清空并删除自定义链 XRAY（允许链不存在）
+iptables -t mangle -F XRAY 2>/dev/null || true
 iptables -t mangle -X XRAY 2>/dev/null || true
+
+# 清理OUTPUT链中的DNS规则（允许失败）
+iptables -t mangle -D OUTPUT -m owner --uid-owner root -p udp --dport 53 2>/dev/null || true
+iptables -t mangle -D OUTPUT -m owner --uid-owner root -p tcp --dport 53 2>/dev/null || true
+
+# 清理NAT表中的DNS劫持规则（允许失败）
+iptables -t nat -D OUTPUT -p udp --dport 53 -m owner ! --uid-owner root -j REDIRECT --to-ports 53 2>/dev/null || true
+iptables -t nat -D OUTPUT -p tcp --dport 53 -m owner ! --uid-owner root -j REDIRECT --to-ports 53 2>/dev/null || true
 
 # 设置策略路由
 if ! ip route flush table 100 2>/dev/null; then
@@ -43,10 +54,20 @@ fi
 
 echo "[步骤] 清理旧的 IPv6 规则..."
 
+# 删除 fwmark 规则（允许失败，规则可能不存在）
 ip -6 rule del fwmark 1 table 100 2>/dev/null || true
-ip6tables -t mangle -F 2>/dev/null || true
+
+# 删除之前添加的PREROUTING链中的XRAY6规则（允许失败）
+ip6tables -t mangle -D PREROUTING -j XRAY6 2>/dev/null || true
+
+# 清空并删除自定义链 XRAY6（允许链不存在）
+ip6tables -t mangle -F XRAY6 2>/dev/null || true
 ip6tables -t mangle -X XRAY6 2>/dev/null || true
 
+# 清理NAT表中的IPv6 DNS劫持规则（允许失败）
+ip6tables -t nat -D OUTPUT -p udp --dport 53 -m owner ! --uid-owner root -j REDIRECT --to-ports 53 2>/dev/null || true
+
+# 清理路由表
 ip -6 route flush table 100 2>/dev/null || true
 
 if ! ip -6 rule add fwmark 1 table 100; then
