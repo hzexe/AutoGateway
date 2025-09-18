@@ -1,0 +1,13 @@
+[Unit]
+Description=AutoGateway Setup
+After=network.target docker.service
+Requires=network.target
+Wants=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /root/tproxy.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
