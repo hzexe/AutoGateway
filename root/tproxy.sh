@@ -173,8 +173,8 @@ echo "[信息] 配置IPv6 DNS劫持..."
 ip6tables -t nat -A OUTPUT -p udp --dport 53 -m owner ! --uid-owner root -j REDIRECT --to-ports 53 2>/dev/null || echo "[警告] IPv6 DNS劫持可能不支持"
 # -------------------------------
 
-echo "[步骤] IPv4 发转规则..."
-iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o eth0 -j MASQUERADE || error_exit "应用 IPv4 发转规则失败"
+#echo "[步骤] IPv4 发转规则..."
+#iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o eth0 -j MASQUERADE || error_exit "应用 IPv4 发转规则失败"
 
 
 # -------------------------------
