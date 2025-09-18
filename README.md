@@ -30,10 +30,10 @@
 ## 使用方法
 
 1. 下载项目文件：
-    - 从 GitHub 下载项目文件：[AutoGateway](https://github.com/coolb/AutoGateway)
+    - 从 GitHub 下载项目文件：[AutoGateway](https://github.com/hzexe/AutoGateway)
     - 或者使用 `git clone` 命令克隆项目：
       ```bash
-      git clone https://github.com/coolb/AutoGateway.git
+      git clone https://github.com/hzexe/AutoGateway.git
       ```
 
 2. 上传文件到目标系统：
